@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+}
+
+@layer components {
+  .atom-sphere {
+    @apply rounded-full flex items-center justify-center font-bold select-none;
+    box-shadow: inset -4px -6px 10px rgba(0, 0, 0, 0.35),
+                inset 4px 6px 10px rgba(255, 255, 255, 0.55),
+                0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+}
