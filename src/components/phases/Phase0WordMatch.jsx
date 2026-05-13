@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
-import { DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext } from '@dnd-kit/core';
 import WordCard from '../common/WordCard.jsx';
 import DropZone from '../common/DropZone.jsx';
 import { useGame } from '../../context/GameContext.jsx';
+import { useDragSensors } from '../../hooks/useDragSensors.js';
 
 // Phase 0: 한글 명칭(단어) 카드 매칭
 // - 반응물/생성물 *내부* 순서는 무관하게 통과 (side만 검증).
@@ -28,9 +29,7 @@ export default function Phase0WordMatch() {
     ),
   }), [slots]);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 4 } })
-  );
+  const sensors = useDragSensors();
 
   const onDragEnd = (event) => {
     const { active, over } = event;

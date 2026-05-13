@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ATOMS, MOLECULES } from '../constants/atoms.js';
 import { MISSIONS } from '../constants/missions.js';
 import { buildKoreanReaction, tallyFromCoefficients } from '../utils/molecules.js';
+import ChemEquation from './common/ChemEquation.jsx';
 
 // 미션 클리어 시 표시되는 학습지 답안 정리 페이지.
 // 학생이 활동지에 직접 적을 수 있도록 한글 반응식 / 완성된 화학 반응식 /
@@ -48,7 +49,11 @@ export default function MissionSummary({ missionIndex, onAdvance }) {
               <span className="text-base text-slate-800">{koreanReaction}</span>
             </Row>
             <Row label="완성된 화학 반응식">
-              <ChemEquation target={mission.phase2.target} />
+              <ChemEquation
+                reactants={mission.phase2.target.reactants}
+                products={mission.phase2.target.products}
+                className="text-lg"
+              />
             </Row>
             <Row label="반응 전후 원자 개수">
               <AtomCountTable
@@ -121,41 +126,6 @@ function Row({ label, children }) {
         {children}
       </div>
     </div>
-  );
-}
-
-function ChemEquation({ target }) {
-  return (
-    <span className="font-mono font-bold text-lg text-slate-800 flex flex-wrap items-center gap-1">
-      <Side coeffs={target.reactants} />
-      <span className="mx-2">→</span>
-      <Side coeffs={target.products} />
-    </span>
-  );
-}
-
-function Side({ coeffs }) {
-  const entries = Object.entries(coeffs);
-  return (
-    <>
-      {entries.map(([formula, count], i) => (
-        <span key={formula} className="flex items-center">
-          {i > 0 && <span className="mx-1">+</span>}
-          {count > 1 && <span>{count}</span>}
-          <FormulaText formula={formula} />
-        </span>
-      ))}
-    </>
-  );
-}
-
-function FormulaText({ formula }) {
-  return (
-    <span>
-      {formula.split(/(\d+)/).map((piece, i) =>
-        /^\d+$/.test(piece) ? <sub key={i}>{piece}</sub> : <span key={i}>{piece}</span>
-      )}
-    </span>
   );
 }
 

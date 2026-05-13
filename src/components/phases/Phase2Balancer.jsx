@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react';
-import { DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext } from '@dnd-kit/core';
 import MoleculeCard from '../common/MoleculeCard.jsx';
 import DropZone from '../common/DropZone.jsx';
 import AtomCounter from '../common/AtomCounter.jsx';
+import ChemEquation from '../common/ChemEquation.jsx';
 import { useGame } from '../../context/GameContext.jsx';
 import { MOLECULES } from '../../constants/atoms.js';
 import { atomsEqual, buildKoreanReaction, countByFormula, tallyAtoms } from '../../utils/molecules.js';
+import { useDragSensors } from '../../hooks/useDragSensors.js';
 import MissionSummary from '../MissionSummary.jsx';
 
 // Phase 2: 계수 맞추기
@@ -23,9 +25,7 @@ export default function Phase2Balancer() {
   const [reactants, setReactants] = useState([]);
   const [products, setProducts] = useState([]);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 4 } })
-  );
+  const sensors = useDragSensors();
 
   const reactantAtoms = useMemo(() => tallyAtoms(reactants), [reactants]);
   const productAtoms = useMemo(() => tallyAtoms(products), [products]);
@@ -108,13 +108,26 @@ export default function Phase2Balancer() {
       <div className="flex flex-col h-full gap-4 relative">
         <header className="text-center flex flex-col items-center gap-2">
           <h2 className="text-2xl font-bold text-slate-800">계수 맞추기</h2>
-          <div className="rounded-xl bg-amber-50 border border-amber-200 px-5 py-2 text-lg font-semibold text-slate-800">
-            {koreanReaction}
+          <div className="flex flex-col items-center gap-1.5">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-amber-700 bg-amber-100 px-2 py-0.5 rounded">정답</span>
+              <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-1.5 text-base font-semibold text-slate-800">
+                {koreanReaction}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-sky-700 bg-sky-100 px-2 py-0.5 rounded">현재</span>
+              <div className="rounded-xl bg-sky-50 border border-sky-200 px-4 py-1.5 min-w-[280px] flex items-center justify-center">
+                <ChemEquation
+                  reactants={reactantCounts}
+                  products={productCounts}
+                  placeholder="?"
+                  className="text-lg"
+                />
+              </div>
+            </div>
           </div>
-          <p className="text-sm text-slate-600">
-            분자 카드를 좌우 영역에 놓아 반응 전/후 원자 개수를 일치시켜 보세요.
-          </p>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-500 mt-1">
             카드의 × 버튼으로 개별 삭제, 영역 밖으로 끌어내도 삭제됩니다.
           </p>
         </header>
@@ -190,7 +203,10 @@ function PaletteItem({ formula }) {
   const [pickCount, setPickCount] = useState(0);
   const dragId = `palette-${formula}-${pickCount}`;
   return (
-    <div onPointerUp={() => setPickCount((c) => c + 1)}>
+    <div
+      onPointerUp={() => setPickCount((c) => c + 1)}
+      className="touch-none"
+    >
       <MoleculeCard
         formula={formula}
         dragId={dragId}

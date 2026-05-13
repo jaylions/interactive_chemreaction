@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DndContext, PointerSensor, useDraggable, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import Atom from '../common/Atom.jsx';
 import DropZone from '../common/DropZone.jsx';
@@ -7,6 +7,7 @@ import MoleculeCard from '../common/MoleculeCard.jsx';
 import { ATOM_LIST } from '../../constants/atoms.js';
 import { matchMolecule } from '../../utils/molecules.js';
 import { useGame } from '../../context/GameContext.jsx';
+import { useDragSensors } from '../../hooks/useDragSensors.js';
 
 // Phase 1: 분자 조립
 // - 하단 원자 바구니에서 원자를 무한 드래그
@@ -17,9 +18,7 @@ export default function Phase1MoleculeBuilder() {
   const { currentMission, unlockedMolecules, unlockMolecule, setPhase } = useGame();
   const required = currentMission.phase1.requiredMolecules;
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 4 } })
-  );
+  const sensors = useDragSensors();
 
   // 작업영역에 놓인 원자 개수
   const [workspace, setWorkspace] = useState({}); // { C: 1, H: 4 }
@@ -168,7 +167,7 @@ function AtomSource({ symbol }) {
       {...listeners}
       {...attributes}
       onPointerUp={() => setPickCount((c) => c + 1)}
-      className="cursor-grab active:cursor-grabbing"
+      className="cursor-grab active:cursor-grabbing touch-none select-none"
     >
       <Atom symbol={symbol} size={56} />
     </div>

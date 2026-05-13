@@ -36,7 +36,7 @@ export default function MoleculeCard({
       style={style}
       {...listeners}
       {...attributes}
-      className="relative flex flex-col items-center gap-1 rounded-2xl bg-white px-3 py-2 shadow-md border border-slate-200 cursor-grab active:cursor-grabbing"
+      className="relative flex flex-col items-center gap-1 rounded-2xl bg-white px-3 py-2 shadow-md border border-slate-200 cursor-grab active:cursor-grabbing touch-none select-none"
     >
       {onRemove && (
         <button

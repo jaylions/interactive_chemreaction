@@ -20,7 +20,7 @@ export default function WordCard({ label, dragId, dragData, disabled = false }) 
       style={style}
       {...listeners}
       {...attributes}
-      className={`rounded-xl bg-white px-5 py-3 shadow border border-slate-300 text-base font-semibold text-slate-800 select-none ${
+      className={`rounded-xl bg-white px-5 py-3 shadow border border-slate-300 text-base font-semibold text-slate-800 select-none touch-none ${
         disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-grab active:cursor-grabbing'
       }`}
     >
