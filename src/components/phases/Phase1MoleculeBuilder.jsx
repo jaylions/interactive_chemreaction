@@ -116,10 +116,12 @@ export default function Phase1MoleculeBuilder() {
           </aside>
         </section>
 
-        {/* 원자 바구니 */}
-        <section className="rounded-xl bg-white border border-slate-200 shadow p-3">
-          <h4 className="text-sm font-bold text-slate-600 mb-2">원자 바구니 (무한 사용 가능)</h4>
-          <div className="flex justify-center gap-6">
+        {/* 원자 바구니 - 가로 한 줄 (세로 공간 절약) */}
+        <section className="rounded-xl bg-white border border-slate-200 shadow px-3 py-1.5 flex items-center justify-center gap-4">
+          <h4 className="text-xs font-bold text-slate-600 shrink-0">
+            원자 바구니 (무한 사용)
+          </h4>
+          <div className="flex gap-4">
             {ATOM_LIST.map((sym) => (
               <AtomSource key={sym} symbol={sym} />
             ))}
@@ -169,7 +171,7 @@ function AtomSource({ symbol }) {
       onPointerUp={() => setPickCount((c) => c + 1)}
       className="cursor-grab active:cursor-grabbing touch-none select-none"
     >
-      <Atom symbol={symbol} size={56} />
+      <Atom symbol={symbol} size={48} />
     </div>
   );
 }
