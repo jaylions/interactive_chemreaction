@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DndContext, useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import Atom from '../common/Atom.jsx';
 import DropZone from '../common/DropZone.jsx';
 import MoleculeCard from '../common/MoleculeCard.jsx';
+import MoleculePopup from '../common/MoleculePopup.jsx';
 import { ATOM_LIST } from '../../constants/atoms.js';
 import { matchMolecule } from '../../utils/molecules.js';
 import { useGame } from '../../context/GameContext.jsx';
@@ -22,32 +23,39 @@ export default function Phase1MoleculeBuilder() {
 
   // 작업영역에 놓인 원자 개수
   const [workspace, setWorkspace] = useState({}); // { C: 1, H: 4 }
+  // 방금 완성된 분자 — 팝업으로 확인할 때까지 잠금해제를 보류
+  const [pendingMolecule, setPendingMolecule] = useState(null);
 
   const unlocked = unlockedMolecules[currentMission.id] || [];
   const allUnlocked = required.every((f) => unlocked.includes(f));
 
+  // workspace가 정확히 어떤 필요 분자와 일치하면 확인 팝업을 띄움.
+  // 팝업이 이미 떠 있으면 새 매칭은 무시.
+  useEffect(() => {
+    if (pendingMolecule) return;
+    const formula = matchMolecule(workspace);
+    if (formula && required.includes(formula)) {
+      setPendingMolecule(formula);
+    }
+  }, [workspace, required, pendingMolecule]);
+
   const onDragEnd = (event) => {
+    // 팝업 떠 있는 동안은 새 원자 추가 차단
+    if (pendingMolecule) return;
     const { active, over } = event;
     if (!over) return;
     const atomSymbol = active.data?.current?.atomSymbol;
     if (!atomSymbol) return;
     if (over.id !== 'workspace') return;
 
-    setWorkspace((prev) => {
-      const next = { ...prev, [atomSymbol]: (prev[atomSymbol] || 0) + 1 };
-
-      // 정확히 일치하는 분자가 있고, 이번 미션에서 필요한 분자라면 자동 병합
-      const formula = matchMolecule(next);
-      if (formula && required.includes(formula)) {
-        unlockMolecule(formula);
-        return {}; // 작업영역 초기화 (병합 완료)
-      }
-      // 그 외에는 누적만 유지 (학생이 직접 제거 가능)
-      return next;
-    });
+    setWorkspace((prev) => ({
+      ...prev,
+      [atomSymbol]: (prev[atomSymbol] || 0) + 1,
+    }));
   };
 
-  const removeAtom = (sym) =>
+  const removeAtom = (sym) => {
+    if (pendingMolecule) return;
     setWorkspace((prev) => {
       const n = (prev[sym] || 0) - 1;
       const next = { ...prev };
@@ -55,8 +63,19 @@ export default function Phase1MoleculeBuilder() {
       else next[sym] = n;
       return next;
     });
+  };
 
-  const clearWorkspace = () => setWorkspace({});
+  const clearWorkspace = () => {
+    if (pendingMolecule) return;
+    setWorkspace({});
+  };
+
+  const confirmMolecule = () => {
+    if (!pendingMolecule) return;
+    unlockMolecule(pendingMolecule);
+    setWorkspace({});
+    setPendingMolecule(null);
+  };
 
   return (
     <DndContext sensors={sensors} onDragEnd={onDragEnd}>
@@ -143,6 +162,13 @@ export default function Phase1MoleculeBuilder() {
             다음 단계로 →
           </button>
         </div>
+
+        {pendingMolecule && (
+          <MoleculePopup
+            formula={pendingMolecule}
+            onConfirm={confirmMolecule}
+          />
+        )}
       </div>
     </DndContext>
   );
