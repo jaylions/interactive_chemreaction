@@ -76,7 +76,7 @@ export default function Phase1MoleculeBuilder() {
           {/* 작업영역 (인터랙티브 화학식 + 원자 모형) */}
           <DropZone
             id="workspace"
-            className="min-h-[260px] flex flex-col items-center justify-center gap-3"
+            className="min-h-[200px] flex flex-col items-center justify-center gap-2"
             placeholder="여기에 원자를 끌어다 놓으세요"
           >
             <FormulaDisplay workspace={workspace} />

@@ -28,16 +28,16 @@ export default function MissionContainer() {
   }
 
   return (
-    <div className="min-h-[760px] flex flex-col">
+    <div className="min-h-[620px] flex flex-col">
       {/* 진행 표시 */}
-      <div className="flex items-center justify-between px-6 py-2 bg-white border-b border-slate-200 rounded-t-2xl">
-        <div className="font-bold text-slate-700">{currentMission.title}</div>
-        <div className="text-sm text-slate-500">
+      <div className="flex items-center justify-between px-4 py-1.5 bg-white border-b border-slate-200 rounded-t-2xl">
+        <div className="font-bold text-slate-700 text-sm">{currentMission.title}</div>
+        <div className="text-xs text-slate-500">
           진행: 미션 {missionIndex + 1} / 3 · Phase {phase}
         </div>
       </div>
 
-      <main className="flex-1 p-4">
+      <main className="flex-1 p-3">
         {phase === 0 && <Phase0WordMatch />}
         {phase === 1 && <Phase1MoleculeBuilder />}
         {phase === 2 && <Phase2Balancer />}

@@ -105,38 +105,35 @@ export default function Phase2Balancer() {
 
   return (
     <DndContext sensors={sensors} onDragEnd={onDragEnd}>
-      <div className="flex flex-col h-full gap-4 relative">
-        <header className="text-center flex flex-col items-center gap-2">
-          <h2 className="text-2xl font-bold text-slate-800">계수 맞추기</h2>
-          <div className="flex flex-col items-center gap-1.5">
+      <div className="flex flex-col h-full gap-2 relative">
+        <header className="text-center flex flex-col items-center gap-1.5">
+          <h2 className="text-lg font-bold text-slate-800">계수 맞추기</h2>
+          {/* 정답/현재 식을 한 박스에 두 줄로 배치 — 세로 공간 절약 */}
+          <div className="rounded-xl bg-slate-50 border border-slate-200 px-4 py-2 flex flex-col gap-1 items-stretch min-w-[320px]">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-amber-700 bg-amber-100 px-2 py-0.5 rounded">정답</span>
-              <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-1.5 text-base font-semibold text-slate-800">
-                {koreanReaction}
-              </div>
+              <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded shrink-0">정답</span>
+              <span className="text-sm font-semibold text-slate-800">{koreanReaction}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-sky-700 bg-sky-100 px-2 py-0.5 rounded">현재</span>
-              <div className="rounded-xl bg-sky-50 border border-sky-200 px-4 py-1.5 min-w-[280px] flex items-center justify-center">
-                <ChemEquation
-                  reactants={reactantCounts}
-                  products={productCounts}
-                  placeholder="?"
-                  className="text-lg"
-                />
-              </div>
+              <span className="text-[10px] font-bold text-sky-700 bg-sky-100 px-1.5 py-0.5 rounded shrink-0">현재</span>
+              <ChemEquation
+                reactants={reactantCounts}
+                products={productCounts}
+                placeholder="?"
+                className="text-base"
+              />
             </div>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-[11px] text-slate-500">
             카드의 × 버튼으로 개별 삭제, 영역 밖으로 끌어내도 삭제됩니다.
           </p>
         </header>
 
         {/* 메인 작업 영역 */}
-        <section className="flex-1 grid grid-cols-[1fr_auto_1fr_auto] gap-3 items-stretch">
+        <section className="flex-1 grid grid-cols-[1fr_auto_1fr_auto] gap-2 items-stretch">
           <DropZone
             id="reactant-zone"
-            className="min-h-[260px] flex flex-wrap items-center justify-center gap-2"
+            className="min-h-[200px] flex flex-wrap items-center justify-center gap-2"
             placeholder="반응물 영역"
           >
             {reactants.map((m) => (
@@ -150,11 +147,11 @@ export default function Phase2Balancer() {
             ))}
           </DropZone>
 
-          <div className="flex items-center text-5xl font-bold text-slate-600 px-2">→</div>
+          <div className="flex items-center text-4xl font-bold text-slate-600 px-1">→</div>
 
           <DropZone
             id="product-zone"
-            className="min-h-[260px] flex flex-wrap items-center justify-center gap-2"
+            className="min-h-[200px] flex flex-wrap items-center justify-center gap-2"
             placeholder="생성물 영역"
           >
             {products.map((m) => (
