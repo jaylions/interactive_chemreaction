@@ -27,12 +27,15 @@ export default function MissionContainer() {
     );
   }
 
+  // Phase 0 화면은 외곽도 더 크게 (1.3배 세로) → 800px
+  const heightClass = phase === 0 ? 'min-h-[800px]' : 'min-h-[620px]';
+
   return (
-    <div className="min-h-[620px] flex flex-col">
+    <div className={`${heightClass} flex flex-col`}>
       {/* 진행 표시 */}
-      <div className="flex items-center justify-between px-4 py-1.5 bg-white border-b border-slate-200 rounded-t-2xl">
-        <div className="font-bold text-slate-700 text-sm">{currentMission.title}</div>
-        <div className="text-xs text-slate-500">
+      <div className="flex items-center justify-between px-5 py-2 bg-white border-b border-slate-200 rounded-t-2xl">
+        <div className="font-bold text-slate-700 text-base">{currentMission.title}</div>
+        <div className="text-sm text-slate-500">
           진행: 미션 {missionIndex + 1} / 3 · Phase {phase}
         </div>
       </div>

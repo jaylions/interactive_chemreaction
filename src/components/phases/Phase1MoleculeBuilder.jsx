@@ -5,6 +5,7 @@ import Atom from '../common/Atom.jsx';
 import DropZone from '../common/DropZone.jsx';
 import MoleculeCard from '../common/MoleculeCard.jsx';
 import MoleculePopup from '../common/MoleculePopup.jsx';
+import ChemicalText from '../common/ChemicalText.jsx';
 import { ATOM_LIST } from '../../constants/atoms.js';
 import { matchMolecule } from '../../utils/molecules.js';
 import { useGame } from '../../context/GameContext.jsx';
@@ -81,12 +82,14 @@ export default function Phase1MoleculeBuilder() {
     <DndContext sensors={sensors} onDragEnd={onDragEnd}>
       <div className="flex flex-col gap-3">
         <header className="text-center">
-          <h2 className="text-xl font-bold text-slate-800">분자 조립소</h2>
-          <p className="text-slate-600 text-sm mt-1">
+          <h2 className="text-2xl font-bold text-slate-800">분자 조립소</h2>
+          <p className="text-slate-700 text-base mt-1">
             아래 원자 바구니에서 원자를 끌어와 분자를 만들어 보세요. 필요한 분자:{' '}
-            <span className="font-bold">{required.join(', ')}</span>
+            <span className="font-bold">
+              <ChemicalText>{required.join(', ')}</ChemicalText>
+            </span>
           </p>
-          <p className="text-xs text-slate-500">
+          <p className="text-sm text-slate-500">
             작업영역의 원자를 클릭하면 한 개씩 빼낼 수 있어요.
           </p>
         </header>
@@ -116,7 +119,7 @@ export default function Phase1MoleculeBuilder() {
 
           {/* 우측 패널: 잠금해제된 분자 카드 */}
           <aside className="w-64 rounded-xl bg-white border border-slate-200 shadow p-3">
-            <h4 className="font-bold text-slate-700 mb-2 text-center">완성한 분자</h4>
+            <h4 className="text-lg font-bold text-slate-700 mb-2 text-center">완성한 분자</h4>
             <div className="flex flex-col gap-3 items-center">
               {required.map((f) => (
                 <div
@@ -137,8 +140,8 @@ export default function Phase1MoleculeBuilder() {
 
         {/* 원자 바구니 - 가로 한 줄 (세로 공간 절약) */}
         <section className="rounded-xl bg-white border border-slate-200 shadow px-3 py-1.5 flex items-center justify-center gap-4">
-          <h4 className="text-xs font-bold text-slate-600 shrink-0">
-            원자 바구니 (무한 사용)
+          <h4 className="text-base font-bold text-slate-600 shrink-0">
+            원자 바구니
           </h4>
           <div className="flex gap-4">
             {ATOM_LIST.map((sym) => (
@@ -149,13 +152,13 @@ export default function Phase1MoleculeBuilder() {
 
         <div className="flex justify-center gap-3">
           <button
-            className="rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-4 py-2"
+            className="rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-5 py-2 text-base"
             onClick={clearWorkspace}
           >
             작업영역 비우기
           </button>
           <button
-            className="rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-6 py-2 disabled:bg-slate-300"
+            className="rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-7 py-2 text-base disabled:bg-slate-300"
             disabled={!allUnlocked}
             onClick={() => setPhase(2)}
           >
@@ -221,17 +224,17 @@ function FormulaDisplay({ workspace }) {
     .filter(({ n }) => n > 0);
 
   return (
-    <div className="min-h-[44px] flex items-center justify-center px-4">
+    <div className="min-h-[56px] flex items-center justify-center px-4">
       {parts.length === 0 ? (
-        <span className="text-slate-400 text-sm">
+        <span className="text-slate-400 text-base">
           원자를 끌어다 놓으면 화학식이 표시돼요
         </span>
       ) : (
-        <div className="flex items-baseline gap-0.5 text-4xl font-bold text-slate-800 font-mono">
+        <div className="flex items-baseline gap-0.5 text-5xl font-bold text-slate-800 font-mono">
           {parts.map(({ sym, n }) => (
             <span key={sym} className="flex items-baseline">
               <span>{sym}</span>
-              {n > 1 && <sub className="text-2xl">{n}</sub>}
+              {n > 1 && <sub className="text-3xl">{n}</sub>}
             </span>
           ))}
         </div>

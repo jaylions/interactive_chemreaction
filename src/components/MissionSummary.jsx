@@ -3,6 +3,7 @@ import { ATOMS, MOLECULES } from '../constants/atoms.js';
 import { MISSIONS } from '../constants/missions.js';
 import { buildKoreanReaction, tallyFromCoefficients } from '../utils/molecules.js';
 import ChemEquation from './common/ChemEquation.jsx';
+import ChemicalText from './common/ChemicalText.jsx';
 
 // 미션 클리어 시 표시되는 학습지 답안 정리 페이지.
 // 학생이 활동지에 직접 적을 수 있도록 한글 반응식 / 완성된 화학 반응식 /
@@ -63,7 +64,13 @@ export default function MissionSummary({ missionIndex, onAdvance }) {
               />
             </Row>
             {missionIndex === 2 && (
-              <Row label="계수의 비 활용 (NO₂ 분자 50개 생성 시)">
+              <Row
+                label={
+                  <>
+                    계수의 비 활용 (<ChemicalText>NO2</ChemicalText> 분자 50개 생성 시)
+                  </>
+                }
+              >
                 <Mission3Extra target={mission.phase2.target} />
               </Row>
             )}
@@ -175,17 +182,17 @@ function Mission3Extra({ target }) {
   return (
     <div className="space-y-1 text-sm text-slate-800">
       <div>
-        계수의 비 (N₂ : O₂ : NO₂) ={' '}
+        계수의 비 (<ChemicalText>N2 : O2 : NO2</ChemicalText>) ={' '}
         <span className="font-mono font-bold">
           {n2} : {o2} : {no2}
         </span>
       </div>
       <div>
-        반응한 질소 분자(N₂):{' '}
+        반응한 질소 분자(<ChemicalText>N2</ChemicalText>):{' '}
         <span className="font-mono font-bold">{n2 * scale}개</span>
       </div>
       <div>
-        반응한 산소 분자(O₂):{' '}
+        반응한 산소 분자(<ChemicalText>O2</ChemicalText>):{' '}
         <span className="font-mono font-bold">{o2 * scale}개</span>
       </div>
     </div>

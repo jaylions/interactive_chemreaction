@@ -106,71 +106,83 @@ export default function Phase2Balancer() {
   return (
     <DndContext sensors={sensors} onDragEnd={onDragEnd}>
       <div className="flex flex-col h-full gap-2 relative">
-        <header className="text-center flex flex-col items-center gap-1.5">
-          <h2 className="text-lg font-bold text-slate-800">계수 맞추기</h2>
-          {/* 정답/현재 식을 한 박스에 두 줄로 배치 — 세로 공간 절약 */}
-          <div className="rounded-xl bg-slate-50 border border-slate-200 px-4 py-2 flex flex-col gap-1 items-stretch min-w-[320px]">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded shrink-0">정답</span>
-              <span className="text-sm font-semibold text-slate-800">{koreanReaction}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold text-sky-700 bg-sky-100 px-1.5 py-0.5 rounded shrink-0">현재</span>
-              <ChemEquation
-                reactants={reactantCounts}
-                products={productCounts}
-                placeholder="?"
-                className="text-base"
-              />
-            </div>
+        <header className="text-center flex flex-col items-center gap-2">
+          <h2 className="text-2xl font-bold text-slate-800">계수 맞추기</h2>
+
+          {/* 정답 박스 — 정적, 학생이 만들어야 할 목표 */}
+          <div className="rounded-xl bg-amber-50 border-2 border-amber-200 px-5 py-2 flex items-center gap-3">
+            <span className="text-sm font-bold text-amber-700 bg-amber-100 px-2.5 py-1 rounded shrink-0">정답</span>
+            <span className="text-xl font-bold text-slate-800">{koreanReaction}</span>
           </div>
-          <p className="text-[11px] text-slate-500">
+
+          {/* 현재 화학식 박스 — 학생이 카드를 놓을 때마다 실시간 변화하는 핵심 부분 */}
+          <div className="rounded-2xl bg-sky-50 border-2 border-sky-300 px-7 py-3 flex items-center gap-3 shadow-md transition-colors">
+            <span className="text-base font-bold text-sky-700 bg-sky-200 px-3 py-1 rounded shrink-0">현재</span>
+            <ChemEquation
+              reactants={reactantCounts}
+              products={productCounts}
+              placeholder="?"
+              className="text-4xl"
+            />
+          </div>
+
+          <p className="text-sm text-slate-500">
             카드의 × 버튼으로 개별 삭제, 영역 밖으로 끌어내도 삭제됩니다.
           </p>
         </header>
 
-        {/* 메인 작업 영역 */}
+        {/* 메인 작업 영역 - 각 영역 위에 반응물/생성물 라벨로 명확히 구분 */}
         <section className="flex-1 grid grid-cols-[1fr_auto_1fr_auto] gap-2 items-stretch">
-          <DropZone
-            id="reactant-zone"
-            className="min-h-[200px] flex flex-wrap items-center justify-center gap-2"
-            placeholder="반응물 영역"
-          >
-            {reactants.map((m) => (
-              <MoleculeCard
-                key={m.instanceId}
-                formula={m.formula}
-                dragId={`r-${m.instanceId}`}
-                dragData={{ instanceId: m.instanceId, from: 'reactant' }}
-                onRemove={() => removeInstance('reactant', m.instanceId)}
-              />
-            ))}
-          </DropZone>
+          <div className="flex flex-col">
+            <div className="text-center text-lg font-bold text-rose-700 bg-rose-100 border-2 border-rose-300 border-b-0 rounded-t-xl py-1.5">
+              반응물 (반응 전)
+            </div>
+            <DropZone
+              id="reactant-zone"
+              className="flex-1 min-h-[180px] flex flex-wrap items-center justify-center gap-2 rounded-t-none border-t-0"
+              placeholder="여기에 반응물 분자를 놓으세요"
+            >
+              {reactants.map((m) => (
+                <MoleculeCard
+                  key={m.instanceId}
+                  formula={m.formula}
+                  dragId={`r-${m.instanceId}`}
+                  dragData={{ instanceId: m.instanceId, from: 'reactant' }}
+                  onRemove={() => removeInstance('reactant', m.instanceId)}
+                />
+              ))}
+            </DropZone>
+          </div>
 
-          <div className="flex items-center text-4xl font-bold text-slate-600 px-1">→</div>
+          <div className="flex items-center text-5xl font-bold text-slate-600 px-1">→</div>
 
-          <DropZone
-            id="product-zone"
-            className="min-h-[200px] flex flex-wrap items-center justify-center gap-2"
-            placeholder="생성물 영역"
-          >
-            {products.map((m) => (
-              <MoleculeCard
-                key={m.instanceId}
-                formula={m.formula}
-                dragId={`p-${m.instanceId}`}
-                dragData={{ instanceId: m.instanceId, from: 'product' }}
-                onRemove={() => removeInstance('product', m.instanceId)}
-              />
-            ))}
-          </DropZone>
+          <div className="flex flex-col">
+            <div className="text-center text-lg font-bold text-emerald-700 bg-emerald-100 border-2 border-emerald-300 border-b-0 rounded-t-xl py-1.5">
+              생성물 (반응 후)
+            </div>
+            <DropZone
+              id="product-zone"
+              className="flex-1 min-h-[180px] flex flex-wrap items-center justify-center gap-2 rounded-t-none border-t-0"
+              placeholder="여기에 생성물 분자를 놓으세요"
+            >
+              {products.map((m) => (
+                <MoleculeCard
+                  key={m.instanceId}
+                  formula={m.formula}
+                  dragId={`p-${m.instanceId}`}
+                  dragData={{ instanceId: m.instanceId, from: 'product' }}
+                  onRemove={() => removeInstance('product', m.instanceId)}
+                />
+              ))}
+            </DropZone>
+          </div>
 
           <AtomCounter before={reactantAtoms} after={productAtoms} shown={shownAtoms} />
         </section>
 
         {/* 분자 팔레트 */}
         <section className="rounded-xl bg-white border border-slate-200 shadow p-3">
-          <h4 className="text-sm font-bold text-slate-600 mb-2">분자 팔레트 (무한 사용 가능)</h4>
+          <h4 className="text-base font-bold text-slate-600 mb-2">분자 팔레트 (무한 사용 가능)</h4>
           <div className="flex justify-center gap-4">
             {palette.map((formula) => (
               <PaletteItem key={formula} formula={formula} />
@@ -180,7 +192,7 @@ export default function Phase2Balancer() {
 
         <div className="flex justify-center">
           <button
-            className="rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-4 py-2"
+            className="rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-5 py-2 text-base"
             onClick={clearAll}
           >
             모두 비우기

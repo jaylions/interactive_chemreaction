@@ -16,22 +16,22 @@ export default function AtomCounter({ before = {}, after = {}, shown }) {
 
   return (
     <div
-      className={`rounded-xl shadow-md border-2 p-3 w-60 transition-colors ${
+      className={`rounded-xl shadow-md border-2 p-3 w-64 transition-colors ${
         success
           ? 'bg-emerald-50 border-emerald-400'
           : 'bg-white border-slate-300'
       }`}
     >
-      <h4 className="text-base font-bold text-slate-700 mb-2 text-center flex items-center justify-center gap-1.5">
+      <h4 className="text-lg font-bold text-slate-700 mb-2 text-center flex items-center justify-center gap-1.5">
         <span aria-hidden>⚖️</span>
         <span>원자 개수 비교</span>
       </h4>
       <table className="w-full">
         <thead>
-          <tr className="text-xs text-slate-500 border-b border-slate-200">
-            <th className="py-1 text-left font-medium">원자</th>
-            <th className="py-1 text-center font-medium">반응 전</th>
-            <th className="py-1 text-center font-medium">반응 후</th>
+          <tr className="text-sm text-slate-500 border-b border-slate-200">
+            <th className="py-1 text-left font-semibold">원자</th>
+            <th className="py-1 text-center font-semibold">반응 전</th>
+            <th className="py-1 text-center font-semibold">반응 후</th>
           </tr>
         </thead>
         <tbody>
@@ -50,16 +50,16 @@ export default function AtomCounter({ before = {}, after = {}, shown }) {
                 key={sym}
                 className="border-b border-slate-100 last:border-0"
               >
-                <td className="py-1.5 text-sm font-medium text-slate-700">
+                <td className="py-1.5 text-base font-semibold text-slate-700">
                   {ATOMS[sym]?.name}({sym})
                 </td>
                 <td
-                  className={`py-1.5 text-center font-mono font-bold text-2xl ${valueClass}`}
+                  className={`py-1.5 text-center font-mono font-bold text-3xl ${valueClass}`}
                 >
                   {b}
                 </td>
                 <td
-                  className={`py-1.5 text-center font-mono font-bold text-2xl ${valueClass}`}
+                  className={`py-1.5 text-center font-mono font-bold text-3xl ${valueClass}`}
                 >
                   {a}
                 </td>

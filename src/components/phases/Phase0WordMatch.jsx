@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { DndContext } from '@dnd-kit/core';
 import WordCard from '../common/WordCard.jsx';
 import DropZone from '../common/DropZone.jsx';
+import ChemicalText from '../common/ChemicalText.jsx';
 import { useGame } from '../../context/GameContext.jsx';
 import { useDragSensors } from '../../hooks/useDragSensors.js';
 
@@ -67,24 +68,26 @@ export default function Phase0WordMatch() {
 
   return (
     <DndContext sensors={sensors} onDragEnd={onDragEnd}>
-      <div className="flex flex-col h-full gap-6">
+      <div className="flex flex-col h-full gap-8">
         <header className="text-center">
-          <h2 className="text-2xl font-bold text-slate-800">{currentMission.title}</h2>
-          <p className="text-slate-600 mt-1">{currentMission.description}</p>
-          <p className="text-sm text-slate-500 mt-2">
+          <h2 className="text-4xl font-bold text-slate-800">{currentMission.title}</h2>
+          <p className="text-slate-600 text-xl mt-2">
+            <ChemicalText>{currentMission.description}</ChemicalText>
+          </p>
+          <p className="text-base text-slate-500 mt-3">
             반응물과 생성물에 해당하는 단어 카드를 드래그해 올바른 자리에 놓아보세요.
           </p>
         </header>
 
         {/* 중앙 식 영역 */}
-        <section className="flex items-center justify-center gap-3 flex-1">
+        <section className="flex items-center justify-center gap-4 flex-1">
           <SlotGroup slots={reactantSlots} filled={filled} onRemove={removeFromSlot} />
           <Arrow />
           <SlotGroup slots={productSlots} filled={filled} onRemove={removeFromSlot} />
         </section>
 
         {/* 단어 카드 풀 */}
-        <section className="flex flex-wrap justify-center gap-3">
+        <section className="flex flex-wrap justify-center gap-4">
           {cards.map((label, i) => (
             <WordCard
               key={`${label}-${i}`}
@@ -96,15 +99,15 @@ export default function Phase0WordMatch() {
           ))}
         </section>
 
-        <div className="flex justify-center gap-3">
+        <div className="flex justify-center gap-4">
           <button
-            className="rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-4 py-2"
+            className="rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-6 py-3 text-lg"
             onClick={resetAll}
           >
             모두 초기화
           </button>
           <button
-            className="rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-6 py-2 disabled:bg-slate-300"
+            className="rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-8 py-3 text-lg disabled:bg-slate-300"
             disabled={!allDone}
             onClick={() => setPhase(1)}
           >
@@ -118,20 +121,20 @@ export default function Phase0WordMatch() {
 
 function SlotGroup({ slots, filled, onRemove }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-3">
       {slots.map((slot, idx) => (
-        <div key={slot.id} className="flex items-center gap-2">
+        <div key={slot.id} className="flex items-center gap-3">
           <DropZone
             id={slot.id}
             data={{ slotId: slot.id }}
-            className="min-w-[140px] min-h-[72px] flex items-center justify-center"
+            className="min-w-[200px] min-h-[100px] flex items-center justify-center"
             placeholder="여기에 놓기"
           >
             {filled[slot.id] && (
               <FilledChip label={filled[slot.id]} onRemove={() => onRemove(slot.id)} />
             )}
           </DropZone>
-          {idx < slots.length - 1 && <span className="text-2xl font-bold">+</span>}
+          {idx < slots.length - 1 && <span className="text-4xl font-bold text-slate-600">+</span>}
         </div>
       ))}
     </div>
@@ -140,12 +143,12 @@ function SlotGroup({ slots, filled, onRemove }) {
 
 function FilledChip({ label, onRemove }) {
   return (
-    <div className="relative rounded-xl bg-emerald-100 text-emerald-700 font-bold px-4 py-2 border border-emerald-300">
+    <div className="relative rounded-2xl bg-emerald-100 text-emerald-700 font-bold px-6 py-3 text-2xl border-2 border-emerald-300">
       {label}
       <button
         type="button"
         onClick={onRemove}
-        className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-rose-500 hover:bg-rose-600 text-white text-sm font-bold shadow flex items-center justify-center"
+        className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-rose-500 hover:bg-rose-600 text-white text-lg font-bold shadow flex items-center justify-center"
         aria-label="빼내기"
       >
         ×
@@ -155,5 +158,5 @@ function FilledChip({ label, onRemove }) {
 }
 
 function Arrow() {
-  return <span className="text-3xl font-bold text-slate-600 mx-2">→</span>;
+  return <span className="text-5xl font-bold text-slate-600 mx-3">→</span>;
 }

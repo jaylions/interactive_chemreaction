@@ -10,7 +10,7 @@ export const MISSIONS = [
     id: 'mission1',
     title: '미션 1. 메테인 연소 반응',
     description:
-      '메테인(CH₄)이 연소하여 물과 이산화 탄소가 생성되는 반응을 화학 반응식으로 나타내 보자.',
+      '메테인(CH4)이 연소하여 물과 이산화 탄소가 생성되는 반응을 화학 반응식으로 나타내 보자.',
     phase0: {
       slots: [
         { id: 'm1-r1', side: 'reactant', accepts: '메테인' },
@@ -36,7 +36,7 @@ export const MISSIONS = [
     id: 'mission2',
     title: '미션 2. 과산화 수소 분해 반응',
     description:
-      '과산화 수소(H₂O₂)가 물과 산소로 분해되는 반응을 화학 반응식으로 나타내 보자.',
+      '과산화 수소(H2O2)가 물과 산소로 분해되는 반응을 화학 반응식으로 나타내 보자.',
     enterPassword: 'chemistry',
     phase0: {
       slots: [
@@ -62,7 +62,7 @@ export const MISSIONS = [
     id: 'mission3',
     title: '미션 3. 이산화 질소 생성 반응',
     description:
-      '질소 기체와 산소 기체가 반응하여 이산화 질소 기체를 생성하는 반응을 화학 반응식으로 나타내 보자.',
+      '질소 기체(N2)와 산소 기체(O2)가 반응하여 이산화 질소(NO2) 기체를 생성하는 반응을 화학 반응식으로 나타내 보자.',
     enterPassword: 'science',
     phase0: {
       slots: [
