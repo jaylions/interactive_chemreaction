@@ -63,7 +63,7 @@ export const MISSIONS = [
     title: '미션 3. 이산화 질소 생성 반응',
     description:
       '질소 기체(N2)와 산소 기체(O2)가 반응하여 이산화 질소(NO2) 기체를 생성하는 반응을 화학 반응식으로 나타내 보자.',
-    enterPassword: 'science',
+    enterPassword: '권재영',
     phase0: {
       slots: [
         { id: 'm3-r1', side: 'reactant', accepts: '질소' },

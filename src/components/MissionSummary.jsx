@@ -3,11 +3,14 @@ import { ATOMS, MOLECULES } from '../constants/atoms.js';
 import { MISSIONS } from '../constants/missions.js';
 import { buildKoreanReaction, tallyFromCoefficients } from '../utils/molecules.js';
 import ChemEquation from './common/ChemEquation.jsx';
-import ChemicalText from './common/ChemicalText.jsx';
 
 // 미션 클리어 시 표시되는 학습지 답안 정리 페이지.
-// 학생이 활동지에 직접 적을 수 있도록 한글 반응식 / 완성된 화학 반응식 /
-// 반응 전후 원자 개수 / (미션 3) 계수의 비 활용을 정리해서 보여준다.
+// 학습지(V3) 흐름과 동일한 순서로 정리해 학생이 빈칸을 채울 수 있게 한다.
+//  ① 한글 반응식
+//  ② 계수 없는 화학식 반응식
+//  ③ 계수 맞추기 전 원자 개수
+//  ④ 완성된 화학 반응식 (계수 포함)
+//  ⑤ 계수 맞춘 후 원자 개수
 // 다음 미션이 있으면 진입 암호 입력 폼, 없으면 완료 버튼.
 export default function MissionSummary({ missionIndex, onAdvance }) {
   const mission = MISSIONS[missionIndex];
@@ -18,8 +21,12 @@ export default function MissionSummary({ missionIndex, onAdvance }) {
   const [error, setError] = useState(false);
 
   const koreanReaction = buildKoreanReaction(mission.phase0.slots);
-  const beforeCount = tallyFromCoefficients(mission.phase2.target.reactants);
-  const afterCount = tallyFromCoefficients(mission.phase2.target.products);
+  const unbalancedReactants = onesFromKeys(mission.phase2.target.reactants);
+  const unbalancedProducts = onesFromKeys(mission.phase2.target.products);
+  const beforeBalanceReactantCount = tallyFromCoefficients(unbalancedReactants);
+  const beforeBalanceProductCount = tallyFromCoefficients(unbalancedProducts);
+  const afterBalanceReactantCount = tallyFromCoefficients(mission.phase2.target.reactants);
+  const afterBalanceProductCount = tallyFromCoefficients(mission.phase2.target.products);
   const shownAtoms = collectAtoms(mission.phase2.target);
 
   const onSubmit = (e) => {
@@ -46,34 +53,37 @@ export default function MissionSummary({ missionIndex, onAdvance }) {
             <span>📒</span> 학습지 답안 정리
           </h4>
           <div className="space-y-3">
-            <Row label="한글 반응식">
+            <Row label="① 한글 반응식">
               <span className="text-base text-slate-800">{koreanReaction}</span>
             </Row>
-            <Row label="완성된 화학 반응식">
+            <Row label="② 화학식으로 나타낸 반응식 (계수 맞추기 전)">
+              <ChemEquation
+                reactants={unbalancedReactants}
+                products={unbalancedProducts}
+                className="text-lg"
+              />
+            </Row>
+            <Row label="③ 계수 맞추기 전 원자 개수">
+              <AtomCountTable
+                before={beforeBalanceReactantCount}
+                after={beforeBalanceProductCount}
+                atoms={shownAtoms}
+              />
+            </Row>
+            <Row label="④ 완성된 화학 반응식 (계수 포함)">
               <ChemEquation
                 reactants={mission.phase2.target.reactants}
                 products={mission.phase2.target.products}
                 className="text-lg"
               />
             </Row>
-            <Row label="반응 전후 원자 개수">
+            <Row label="⑤ 계수 맞춘 후 원자 개수">
               <AtomCountTable
-                before={beforeCount}
-                after={afterCount}
+                before={afterBalanceReactantCount}
+                after={afterBalanceProductCount}
                 atoms={shownAtoms}
               />
             </Row>
-            {missionIndex === 2 && (
-              <Row
-                label={
-                  <>
-                    계수의 비 활용 (<ChemicalText>NO2</ChemicalText> 분자 50개 생성 시)
-                  </>
-                }
-              >
-                <Mission3Extra target={mission.phase2.target} />
-              </Row>
-            )}
           </div>
         </div>
 
@@ -174,27 +184,8 @@ function AtomCountTable({ before, after, atoms }) {
   );
 }
 
-function Mission3Extra({ target }) {
-  const n2 = target.reactants.N2 || 0;
-  const o2 = target.reactants.O2 || 0;
-  const no2 = target.products.NO2 || 0;
-  const scale = no2 > 0 ? 50 / no2 : 0;
-  return (
-    <div className="space-y-1 text-sm text-slate-800">
-      <div>
-        계수의 비 (<ChemicalText>N2 : O2 : NO2</ChemicalText>) ={' '}
-        <span className="font-mono font-bold">
-          {n2} : {o2} : {no2}
-        </span>
-      </div>
-      <div>
-        반응한 질소 분자(<ChemicalText>N2</ChemicalText>):{' '}
-        <span className="font-mono font-bold">{n2 * scale}개</span>
-      </div>
-      <div>
-        반응한 산소 분자(<ChemicalText>O2</ChemicalText>):{' '}
-        <span className="font-mono font-bold">{o2 * scale}개</span>
-      </div>
-    </div>
-  );
+// 분자별 계수 객체의 키만 가져와 모든 계수를 1로 만든 객체를 돌려준다.
+// "계수 없는" 화학식 반응식과 계수 맞추기 전 원자 개수 계산에 사용.
+function onesFromKeys(coefficients) {
+  return Object.fromEntries(Object.keys(coefficients).map((k) => [k, 1]));
 }
