@@ -48,6 +48,18 @@ function reducer(state, action) {
       };
     }
 
+    case 'JUMP_TO': {
+      const missionIndex = Math.min(
+        Math.max(action.missionIndex, 0),
+        MISSIONS.length - 1
+      );
+      return {
+        ...state,
+        missionIndex,
+        phase: action.phase,
+      };
+    }
+
     case 'RESET':
       return initialState;
 
@@ -67,6 +79,10 @@ export function GameProvider({ children }) {
     []
   );
   const advanceMission = useCallback(() => dispatch({ type: 'ADVANCE_MISSION' }), []);
+  const jumpTo = useCallback(
+    (missionIndex, phase = 0) => dispatch({ type: 'JUMP_TO', missionIndex, phase }),
+    []
+  );
   const reset = useCallback(() => dispatch({ type: 'RESET' }), []);
 
   const value = useMemo(
@@ -76,9 +92,10 @@ export function GameProvider({ children }) {
       setPhase,
       unlockMolecule,
       advanceMission,
+      jumpTo,
       reset,
     }),
-    [state, currentMission, setPhase, unlockMolecule, advanceMission, reset]
+    [state, currentMission, setPhase, unlockMolecule, advanceMission, jumpTo, reset]
   );
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;

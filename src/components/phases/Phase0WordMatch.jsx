@@ -3,6 +3,7 @@ import { DndContext } from '@dnd-kit/core';
 import WordCard from '../common/WordCard.jsx';
 import DropZone from '../common/DropZone.jsx';
 import ChemicalText from '../common/ChemicalText.jsx';
+import AIAssistantPanel from '../common/AIAssistantPanel.jsx';
 import { useGame } from '../../context/GameContext.jsx';
 import { useDragSensors } from '../../hooks/useDragSensors.js';
 
@@ -17,6 +18,7 @@ export default function Phase0WordMatch() {
 
   // slotId -> label (정답으로 채워진 카드)
   const [filled, setFilled] = useState({});
+  const [demoFeedback, setDemoFeedback] = useState(null);
 
   const allDone = slots.every((s) => filled[s.id]);
 
@@ -41,12 +43,30 @@ export default function Phase0WordMatch() {
     if (!label) return;
 
     // 슬롯의 side에 해당하는 라벨인지만 검증 (순서 자유)
-    if (!acceptsBySide[slot.side].has(label)) return;
+    if (!acceptsBySide[slot.side].has(label)) {
+      setDemoFeedback(makeDemoFeedback(label, slot.side, currentMission.title));
+      return;
+    }
     // 같은 라벨이 다른 슬롯에 이미 채워져 있으면 거절
-    if (Object.values(filled).includes(label)) return;
+    if (Object.values(filled).includes(label)) {
+      setDemoFeedback({
+        type: '중복 사용',
+        summary: `${label} 카드를 이미 다른 자리에 사용했어요.`,
+        prompt: '같은 물질을 여러 번 써야 할 때는 카드를 또 놓는 것이 맞는지, 나중에 계수로 표현하는 것이 맞는지 생각해 보세요.',
+      });
+      return;
+    }
     // 이 슬롯이 이미 차있으면 덮어쓰지 않음
-    if (filled[slot.id]) return;
+    if (filled[slot.id]) {
+      setDemoFeedback({
+        type: '슬롯 충돌',
+        summary: '이미 채워진 자리에 다른 카드를 놓으려고 했어요.',
+        prompt: '먼저 지금 놓인 카드가 반응물인지 생성물인지 확인한 뒤, 필요하면 X 버튼으로 빼고 다시 놓아 보세요.',
+      });
+      return;
+    }
 
+    setDemoFeedback(null);
     setFilled((prev) => ({ ...prev, [slot.id]: label }));
   };
 
@@ -78,6 +98,8 @@ export default function Phase0WordMatch() {
             반응물과 생성물에 해당하는 단어 카드를 드래그해 올바른 자리에 놓아보세요.
           </p>
         </header>
+
+        <DemoAiFeedbackPanel feedback={demoFeedback} missionTitle={currentMission.title} />
 
         {/* 중앙 식 영역 */}
         <section className="flex items-center justify-center gap-4 flex-1">
@@ -117,6 +139,44 @@ export default function Phase0WordMatch() {
       </div>
     </DndContext>
   );
+}
+
+function DemoAiFeedbackPanel({ feedback, missionTitle }) {
+  const fallback = {
+    type: '대기 중',
+    summary: 'AI 조수가 풀이 과정을 살펴보고 있어요.',
+    prompt: '카드를 놓으면 필요한 순간에 짧은 힌트가 나타납니다.',
+  };
+  const data = feedback || fallback;
+
+  return (
+    <AIAssistantPanel
+      status={data.type}
+      summary={data.summary}
+      detail={data.prompt}
+      missionTitle={missionTitle}
+      tone="sky"
+    />
+  );
+}
+
+function makeDemoFeedback(label, side, missionTitle) {
+  const sideText = side === 'reactant' ? '반응물' : '생성물';
+  const oppositeText = side === 'reactant' ? '생성물' : '반응물';
+
+  if (label.includes('수소') || label.includes('질소') || label.includes('이산화 탄소')) {
+    return {
+      type: '함정 카드 감지',
+      summary: `${label} 카드는 ${missionTitle}의 ${sideText} 자리에 들어가기 어렵습니다.`,
+      prompt: `${label}이 실제로 이 반응에서 처음부터 필요한 물질인지, 아니면 반응 뒤에 만들어지는 물질인지 확인해 보세요.`,
+    };
+  }
+
+  return {
+    type: '반응 전후 구분 오류',
+    summary: `${label} 카드를 ${sideText} 쪽에 놓았지만, 이 물질은 ${oppositeText} 쪽에서 생각해야 합니다.`,
+    prompt: '이 물질은 반응이 일어나기 전부터 있었나요, 아니면 반응 후에 생겼나요?',
+  };
 }
 
 function SlotGroup({ slots, filled, onRemove }) {

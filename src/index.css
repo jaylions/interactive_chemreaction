@@ -15,4 +15,8 @@ html, body, #root {
                 inset 4px 6px 10px rgba(255, 255, 255, 0.55),
                 0 2px 4px rgba(0, 0, 0, 0.2);
   }
+
+  .dev-jump-btn {
+    @apply rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-2 py-1.5;
+  }
 }

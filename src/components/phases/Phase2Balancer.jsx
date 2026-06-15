@@ -4,6 +4,7 @@ import MoleculeCard from '../common/MoleculeCard.jsx';
 import DropZone from '../common/DropZone.jsx';
 import AtomCounter from '../common/AtomCounter.jsx';
 import ChemEquation from '../common/ChemEquation.jsx';
+import AIAssistantPanel from '../common/AIAssistantPanel.jsx';
 import { useGame } from '../../context/GameContext.jsx';
 import { MOLECULES } from '../../constants/atoms.js';
 import { atomsEqual, buildKoreanReaction, countByFormula, tallyAtoms } from '../../utils/molecules.js';
@@ -131,6 +132,15 @@ export default function Phase2Balancer() {
           </p>
         </header>
 
+        <BalancerAssistant
+          missionTitle={currentMission.title}
+          reactants={reactants}
+          products={products}
+          reactantAtoms={reactantAtoms}
+          productAtoms={productAtoms}
+          isBalanced={isBalanced}
+        />
+
         {/* 메인 작업 영역 - 각 영역 위에 반응물/생성물 라벨로 명확히 구분 */}
         <section className="flex-1 grid grid-cols-[1fr_auto_1fr_auto] gap-2 items-stretch">
           <div className="flex flex-col">
@@ -205,6 +215,77 @@ export default function Phase2Balancer() {
       </div>
     </DndContext>
   );
+}
+
+function BalancerAssistant({
+  missionTitle,
+  reactants,
+  products,
+  reactantAtoms,
+  productAtoms,
+  isBalanced,
+}) {
+  if (isBalanced) {
+    return (
+      <AIAssistantPanel
+        status="완성"
+        summary="반응 전후 원자 수가 같아졌어요."
+        detail="계수는 분자의 개수를 나타내고, 아래첨자는 분자 속 원자 개수를 나타낸다는 점을 확인해 보세요."
+        missionTitle={missionTitle}
+        tone="amber"
+      />
+    );
+  }
+
+  if (reactants.length === 0 && products.length === 0) {
+    return (
+      <AIAssistantPanel
+        status="대기 중"
+        summary="AI 조수가 반응식의 원자 수를 비교할 준비를 하고 있어요."
+        detail="분자 카드를 반응물과 생성물 쪽에 놓으면, 어느 원자 수가 맞지 않는지 함께 확인할 수 있습니다."
+        missionTitle={missionTitle}
+        tone="amber"
+      />
+    );
+  }
+
+  const mismatch = firstMismatch(reactantAtoms, productAtoms);
+  if (mismatch) {
+    return (
+      <AIAssistantPanel
+        status="원자 수 비교"
+        summary={`${mismatch.atom} 원자 수가 아직 맞지 않아요.`}
+        detail={`반응 전 ${mismatch.before}개, 반응 후 ${mismatch.after}개입니다. 아래첨자는 바꾸지 말고 분자 카드의 개수로 맞춰 보세요.`}
+        missionTitle={missionTitle}
+        tone="amber"
+      />
+    );
+  }
+
+  return (
+    <AIAssistantPanel
+      status="계수 확인"
+      summary="원자 수는 맞아 보이지만 정답 계수와 배치가 더 정확해야 해요."
+      detail="반응물과 생성물 쪽에 필요한 분자가 빠지거나 더 들어가지 않았는지 확인해 보세요."
+      missionTitle={missionTitle}
+      tone="amber"
+    />
+  );
+}
+
+function firstMismatch(before, after) {
+  const names = { C: '탄소(C)', H: '수소(H)', O: '산소(O)', N: '질소(N)' };
+  const keys = new Set([...Object.keys(before), ...Object.keys(after)]);
+  for (const key of keys) {
+    if ((before[key] || 0) !== (after[key] || 0)) {
+      return {
+        atom: names[key] || key,
+        before: before[key] || 0,
+        after: after[key] || 0,
+      };
+    }
+  }
+  return null;
 }
 
 // 한 분자에 대해 새로운 인스턴스를 발생시키는 팔레트 항목

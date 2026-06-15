@@ -1,11 +1,16 @@
 import { useGame } from '../context/GameContext.jsx';
 import Phase0WordMatch from './phases/Phase0WordMatch.jsx';
 import Phase1MoleculeBuilder from './phases/Phase1MoleculeBuilder.jsx';
+import StudentMoleculeBuilder from './phases/StudentMoleculeBuilder.jsx';
 import Phase2Balancer from './phases/Phase2Balancer.jsx';
+import FormativeAssessment from './phases/FormativeAssessment.jsx';
 
 // 현재 미션의 phase에 맞춰 적절한 컴포넌트를 렌더링
 export default function MissionContainer() {
   const { phase, currentMission, missionIndex, reset } = useGame();
+  const progressLabel = currentMission.type === 'formativeAssessment'
+    ? '형성평가'
+    : `Phase ${phase + 1}`;
 
   if (phase === 'done') {
     return (
@@ -36,14 +41,16 @@ export default function MissionContainer() {
       <div className="flex items-center justify-between px-5 py-2 bg-white border-b border-slate-200 rounded-t-2xl">
         <div className="font-bold text-slate-700 text-base">{currentMission.title}</div>
         <div className="text-sm text-slate-500">
-          진행: 미션 {missionIndex + 1} / 3 · Phase {phase}
+          진행: 미션 {missionIndex + 1} / 3 · {progressLabel}
         </div>
       </div>
 
       <main className="flex-1 p-3">
-        {phase === 0 && <Phase0WordMatch />}
-        {phase === 1 && <Phase1MoleculeBuilder />}
-        {phase === 2 && <Phase2Balancer />}
+        {currentMission.type === 'formativeAssessment' && <FormativeAssessment />}
+        {currentMission.id === 'mission2' && <Phase1MoleculeBuilder />}
+        {currentMission.id === 'mission1' && phase === 0 && <Phase0WordMatch />}
+        {currentMission.id === 'mission1' && phase === 1 && <StudentMoleculeBuilder />}
+        {currentMission.id === 'mission1' && phase === 2 && <Phase2Balancer />}
       </main>
     </div>
   );

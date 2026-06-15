@@ -1,5 +1,6 @@
 import { GameProvider, useGame } from './context/GameContext.jsx';
 import MissionContainer from './components/MissionContainer.jsx';
+import { useState } from 'react';
 
 export default function App() {
   return (
@@ -27,6 +28,46 @@ function AppShell() {
       >
         <MissionContainer />
       </div>
+      <DevJumpPanel />
+    </div>
+  );
+}
+
+function DevJumpPanel() {
+  const { jumpTo, reset } = useGame();
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="fixed top-3 right-3 z-[60]">
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        className="rounded-full bg-slate-800/80 hover:bg-slate-900 text-white text-xs font-bold px-3 py-2 shadow-lg"
+      >
+        테스트
+      </button>
+      {open && (
+        <div className="absolute right-0 mt-2 w-56 rounded-xl bg-white/95 border border-slate-200 shadow-lg p-2">
+          <div className="flex items-center justify-between mb-1 px-1">
+            <div className="text-[11px] font-bold text-slate-500">테스트 이동</div>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="text-xs font-bold text-slate-400 hover:text-slate-700"
+            >
+              닫기
+            </button>
+          </div>
+          <div className="grid grid-cols-3 gap-1">
+            <button className="dev-jump-btn" onClick={() => jumpTo(0, 0)}>M1-1</button>
+            <button className="dev-jump-btn" onClick={() => jumpTo(0, 1)}>M1-2</button>
+            <button className="dev-jump-btn" onClick={() => jumpTo(0, 2)}>M1-3</button>
+            <button className="dev-jump-btn col-span-3" onClick={() => jumpTo(1, 0)}>M2 교사용 모니터링</button>
+            <button className="dev-jump-btn col-span-2" onClick={() => jumpTo(2, 0)}>M3 형성평가</button>
+            <button className="dev-jump-btn" onClick={reset}>처음</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
